@@ -1,0 +1,18 @@
+---
+# vars file for DB
+# vars for enabling adhoc workloads on sql server
+
+# variables to start SQL Server and Agent service if they are stopped
+#current_state: "{{ stopped }}"
+#sqlserver_service_name: "{{ mssqlserver }}"
+#sqlagent_service_name: "{{ sqlserveragent }}"
+#new_state: "{{ started }}"
+
+# variables for copying powershell and sql files to SQL server
+#src_powershell_item_path: "{{ /etc/ansible/roles/DB/files/adhocwork.ps1 }}"
+#src_sql_item_path: "{{ /etc/ansible/roles/DB/files/adhocworkload.sql }}"
+#dest_item_path: "{{ c:\Windows\Temp\ }}"
+
+# variables to execute powershell file on SQL server
+#dest_powershell_item_path: "{{ c:\Windows\Temp\adhocwork.ps1 }}"
+service_name: "{{ service_name }}"

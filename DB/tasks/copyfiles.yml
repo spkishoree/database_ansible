@@ -1,0 +1,19 @@
+---
+
+#- hosts: win
+#  tasks: 
+ 
+  - name: Copy powershell file to destination server
+    win_copy: 
+     src: "{{ src_item_path }}"
+     dest: "{{ dest_item_path }}"
+    tags: 
+    - copyfiles
+
+#  - name: Copy SQL file to destination server
+#    win_copy: 
+#     src: /etc/ansible/roles/DB/files/adhocworkload.sql
+#     dest: c:\Windows\Temp\
+#    tags: 
+#    - copysqlfile
+

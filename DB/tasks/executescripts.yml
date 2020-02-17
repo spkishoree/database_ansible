@@ -1,0 +1,12 @@
+--- 
+
+#- hosts: win
+#  tasks: 
+
+  - name: Run powershell script to enable adhoc workload option if required
+#    win_shell: c:\Windows\Temp\adhocwork.ps1
+    win_shell: "{{ file_path_name }}"
+#    win_command: "{{ file_path_name }}"
+    tags: 
+    - executefile
+ 

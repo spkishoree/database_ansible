@@ -1,0 +1,8 @@
+---
+# tasks file for DB
+
+- include: checkservice.yml
+- include: startservice.yml
+- include: copyfiles.yml
+- include: executescripts.yml
+

@@ -1,0 +1,20 @@
+---
+
+# - hosts: win
+#   tasks: 
+  
+   - name: Restart SQL server service if it's stopped
+     win_service: 
+      when: state=="stopped"
+      name: "{{ service_name }}"
+      state: started
+     tags: 
+     - startservice
+
+#   - name: Restart SQL Agent service if it's stopped
+#     win_service: 
+#      when: state=="stopped"
+#      name: sqlserveragent 
+#      state: started
+#     tags: 
+#     - startsqlagent

@@ -1,0 +1,14 @@
+---
+- hosts: win
+  tasks: 
+  - name: check service status
+#    raw: cmd /c sc query "mssqlserver"
+#    raw: cmd /c sc query "{{ service_name }}"
+    win_shell: Get-Service "{{ service_name }}"
+    register: result
+#    tags:
+#    - checkservice
+  - debug: 
+     var: result.stdout_lines
+    tags:
+     - checkservice

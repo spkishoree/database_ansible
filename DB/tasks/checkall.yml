@@ -1,0 +1,10 @@
+---
+- hosts: win
+  tasks: 
+  - name: check service status
+#    raw: cmd /c sc query "mssqlserver"
+    raw: cmd /c sc query type=service state=all
+    register: result
+  - debug: 
+     var: result.stdout_lines
+
