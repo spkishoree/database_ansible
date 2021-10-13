@@ -1,101 +1,22 @@
-from flask import Blueprint
-from flask import request, jsonify
-import numpy as np
-from app.utils_app.utils import CommonMethods
-members = Blueprint('members', __name__)
-from app import mReader, msReader, keyValue
-
-CommonMethodsobj = CommonMethods()
-
-@members.route('/api/v2/members/')
-def getAllMembersData():
-    result = {}
-    result["results"] = mReader
-    #return result,200
-    if result["results"]:
-        return jsonify(results = result ,url = '/api/v2/members', start=request.args.get('start', 1), page_size=request.args.get('page_size', 20)),200
-    else:
-        return jsonify({"Result": str("Unable to fetch Members details")}), 700
-
-
-'''
-Route for /group/<groupID>/members' (All members details belongs to specific group)
-This route will take care of all the data for All members data with respective filtering and pagination.
-'''
-@members.route('/api/v2/group/<groupID>/members')
-def getAllMembersDataOfAGroup(groupID):
-    result = {}
-    # rawComp = [data for data in mReader if data["src_grp_nbr"] == groupID]
-    rawComp = mReader[mReader['src_grp_nbr'] == groupID]
-    rawComp.drop('src_grp_nbr', inplace=True, axis= 1)
-    #rawComp.drop('Leading Diagnosis code 1', inplace=True, axis=1)
-    #rawComp.drop('Leading Diagnosis code 2', inplace=True, axis=1)
-    # rawComp['exp paid (total)'] = rawComp['exp paid (total)'].astype(float)
-    # rawComp['exp paid (total)'] = rawComp['exp paid (total)'].astype(int).map('$ {:,}'.format).astype(str)
-    # rawComp['exp allowed'] = rawComp['exp allowed'].astype(float)
-    rawComp['probability'] = rawComp['probability'].astype(float)
-    rawComp = rawComp.fillna(value='')
-    rawComp = rawComp.to_dict('records')
-
-    result["results"] = rawComp
-    if rawComp:
-        return jsonify(results = result,url = '/api/v2/group/'+groupID+'/members', start=request.args.get('start', 1), page_size=request.args.get('page_size', 20)),200
-    else:
-        return jsonify({"Result":str("Members for " + groupID + " name Not Found and with respective data")}), 700
-
-
-'''
-Route for /group/<groupID>/members/<mcid>' (Respective members details belongs to specific group)
-This route will take care of all the data for particular members data with respective filtering and pagination.
-'''
-@members.route('/api/v2/group/<groupID>/member/<mcid>')
-def getMemberDataOfAGroup(groupID,mcid):
-    result = {}
-    rawComp = [data for data in mReader if data["src_grp_nbr"] == groupID and data["mcid"] == mcid]
-    result["results"] = rawComp
-    if rawComp:
-        return jsonify(results = result,url = '/api/v2/group/'+groupID+'/member/'+mcid, start=request.args.get('start', 1), page_size=request.args.get('page_size', 20)),200
-    else:
-        return jsonify({"Result": str("Members with " + groupID + " name Not Found and with respective mcid")}), 700
-
-
-@members.route('/api/v2/group/<groupID>/member/<mcid>/shap')
-def getMemberDataOfAGroupSHAP(groupID, mcid):
-    result = {}
-    # keys = ['ft_name', 'shap_val']
-    # rawComp = [{key : float(data.get(key)) if key == 'shap_val' else (data.get(key)) for key in keys} for data in msReader if data["groupid"] == groupID and data['mcid'] == mcid]
-    # print(rawComp)
-    # for feature in rawComp:
-    #     if feature['ft_name'] in keyValue.keys():
-    #         feature['ft_name'] = keyValue[feature['ft_name']]
-    # print(rawComp)
-    rawComp = msReader[((msReader['groupid'] == groupID) & (msReader['mcid'] == mcid))]
-    rawComp_members = mReader[((mReader['src_grp_nbr'] == groupID) & (mReader['mcid'] == mcid))]
-    rawComp_leadingFactors = rawComp_members.filter(['Leading Diagnosis code 1', 'Leading Diagnosis code 2'], axis=1)
-    print(rawComp_leadingFactors)
-    # TAKE ABSOLUTE VALUES OF SHAP VALUES
-    rawComp['shap_val_abs'] = rawComp['shap_val'].astype(float).abs()
-    # SORT BASED ON THOSE ABSOLUTE
-    rawComp = rawComp.sort_values(by='shap_val_abs', ascending=False, na_position='first')
-    rawComp = rawComp.reset_index(drop=True)
-    rawComp["magnitude"] = np.where(rawComp["shap_val"].astype(float) >= 0, "postive", "negative")
-    rawComp["Interpretation"] = np.where(rawComp["magnitude"] == "postive", "This feature increased the prediction",
-                                         "This feature decreased the prediction")
-    rawComp["Impact"] = rawComp.apply(lambda row: CommonMethodsobj.impact(row.magnitude, row.name), axis=1)
-    # print(rawComp)
-
-    rawComp = rawComp.to_dict('records')
-    rawComp_leadingFactors = rawComp_leadingFactors.to_dict('records')
-    # print(rawComp)
-    for feature in rawComp:
-        if feature['ft_name'] in keyValue.keys():
-            feature['ft_name'] = keyValue[feature['ft_name']]
-    result["results"] = rawComp
-    result["leading_factor_codes"] = rawComp_leadingFactors
-    if rawComp:
-        return jsonify(results=result, url='/api/v2/groups/' + groupID + '/member/' + mcid + '/shap',
-                       start=request.args.get('start', 1), page_size=request.args.get('page_size', 20)), 200
-    else:
-        return jsonify({"Result": str("SHAP values for respective mcid not found")}), 700
-
-
+src_grp_nbr,mbrshp_sor_cd,mbu_cf_cd,brnd_desc,exp paid total,exp allowed total,experience mm,target mm,exp paid (PMPM),exp allowed (PMPM),target eatpp (PMPM),predicted pooled claims (PMPM)
+00002069,823       ,MJKYG2,BCBSKY,"$ 1,673","$ 2,729",21.0,12.0,$ 139,$ 227,0.0,0
+000038,808       ,MJCTZ1,BCBSCT,"$ 2,602,622","$ 3,035,591",5067.0,5130.678,$ 507,$ 591,5.091,1
+00010187,823       ,PBINZZ,BCBSIN,"$ 8,090,856","$ 47,192,418",52934.565,46245.747,$ 174,"$ 1,020",37.665,1
+00010188,823       ,PBINZZ,BCBSIN,"$ 351,729","$ 1,933,800",2232.697,1962.096,$ 179,$ 985,42.216,0
+00015686,823       ,SPKYZZ,BCBSKY,"$ 17,295","$ 20,897",169.0,84.0,$ 205,$ 248,139.512,0
+00015715,823       ,SPKYZZ,BCBSKY,"$ 1,388","$ 2,236",12.0,4.0,$ 347,$ 559,0.0,0
+00016007,823       ,SPKYZZ,BCBSKY,"$ 24,484","$ 26,661",32.0,18.0,"$ 1,360","$ 1,481",0.0,0
+00016069,823       ,SPKYZZ,BCBSKY,"$ 2,363","$ 2,775",56.0,2.0,"$ 1,181","$ 1,387",0.0,0
+00016221,823       ,MJKYG2,BCBSKY,"$ 55,109","$ 57,605",24.0,8.0,"$ 6,888","$ 7,200",0.0,0
+00016424,823       ,SPKYZZ,BCBSKY,"$ 1,276","$ 1,746",49.0,8.0,$ 159,$ 218,0.0,0
+00018497,823       ,MJKYG2,BCBSKY,$ 813,"$ 1,109",24.0,3.0,$ 271,$ 369,0.0,0
+00018594,823       ,SPKYZZ,BCBSKY,"$ 2,971","$ 4,288",12.0,2.0,"$ 1,485","$ 2,144",0.0,0
+00018804,823       ,SPKYZZ,BCBSKY,"$ 2,996","$ 3,174",12.0,2.0,"$ 1,498","$ 1,587",0.0,0
+00018836,823       ,MJKYG2,BCBSKY,"$ 4,247","$ 6,988",12.0,6.0,$ 707,"$ 1,164",0.0,0
+00021759,823       ,SPKYZZ,BCBSKY,"$ 23,517","$ 24,608",44.0,8.0,"$ 2,939","$ 3,076",0.0,0
+00021803,823       ,MJKYG2,BCBSKY,"$ 5,946","$ 7,564",24.0,12.0,$ 495,$ 630,0.0,0
+00021811,823       ,MJKYG2,BCBSKY,"$ 13,999","$ 40,483",12.0,6.0,"$ 2,333","$ 6,747",0.0,0
+00022164,823       ,MJKYG2,BCBSKY,"$ 4,805","$ 6,123",36.0,18.0,$ 266,$ 340,0.0,0
+00022262,823       ,MJKYG2,BCBSKY,"$ 3,505","$ 3,615",19.0,3.0,"$ 1,168","$ 1,205",0.0,0
+00024243,823       ,MJKYG2,BCBSKY,"$ 16,087","$ 17,971",24.0,12.0,"$ 1,340","$ 1,497",0.0,0
+00027596,823       ,MJKYG2,BCBSKY,$ 321,"$ 1,076",24.0,12.0,$ 26,$ 89,0.0,0
