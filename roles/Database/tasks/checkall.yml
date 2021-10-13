@@ -1,10 +1,101 @@
----
-- hosts: win
-  tasks: 
-  - name: check service status
-#    raw: cmd /c sc query "mssqlserver"
-    raw: cmd /c sc query type=service state=all
-    register: result
-  - debug: 
-     var: result.stdout_lines
+from flask import Blueprint
+from flask import request, jsonify
+import numpy as np
+from app.utils_app.utils import CommonMethods
+members = Blueprint('members', __name__)
+from app import mReader, msReader, keyValue
+
+CommonMethodsobj = CommonMethods()
+
+@members.route('/api/v2/members/')
+def getAllMembersData():
+    result = {}
+    result["results"] = mReader
+    #return result,200
+    if result["results"]:
+        return jsonify(results = result ,url = '/api/v2/members', start=request.args.get('start', 1), page_size=request.args.get('page_size', 20)),200
+    else:
+        return jsonify({"Result": str("Unable to fetch Members details")}), 700
+
+
+'''
+Route for /group/<groupID>/members' (All members details belongs to specific group)
+This route will take care of all the data for All members data with respective filtering and pagination.
+'''
+@members.route('/api/v2/group/<groupID>/members')
+def getAllMembersDataOfAGroup(groupID):
+    result = {}
+    # rawComp = [data for data in mReader if data["src_grp_nbr"] == groupID]
+    rawComp = mReader[mReader['src_grp_nbr'] == groupID]
+    rawComp.drop('src_grp_nbr', inplace=True, axis= 1)
+    #rawComp.drop('Leading Diagnosis code 1', inplace=True, axis=1)
+    #rawComp.drop('Leading Diagnosis code 2', inplace=True, axis=1)
+    # rawComp['exp paid (total)'] = rawComp['exp paid (total)'].astype(float)
+    # rawComp['exp paid (total)'] = rawComp['exp paid (total)'].astype(int).map('$ {:,}'.format).astype(str)
+    # rawComp['exp allowed'] = rawComp['exp allowed'].astype(float)
+    rawComp['probability'] = rawComp['probability'].astype(float)
+    rawComp = rawComp.fillna(value='')
+    rawComp = rawComp.to_dict('records')
+
+    result["results"] = rawComp
+    if rawComp:
+        return jsonify(results = result,url = '/api/v2/group/'+groupID+'/members', start=request.args.get('start', 1), page_size=request.args.get('page_size', 20)),200
+    else:
+        return jsonify({"Result":str("Members for " + groupID + " name Not Found and with respective data")}), 700
+
+
+'''
+Route for /group/<groupID>/members/<mcid>' (Respective members details belongs to specific group)
+This route will take care of all the data for particular members data with respective filtering and pagination.
+'''
+@members.route('/api/v2/group/<groupID>/member/<mcid>')
+def getMemberDataOfAGroup(groupID,mcid):
+    result = {}
+    rawComp = [data for data in mReader if data["src_grp_nbr"] == groupID and data["mcid"] == mcid]
+    result["results"] = rawComp
+    if rawComp:
+        return jsonify(results = result,url = '/api/v2/group/'+groupID+'/member/'+mcid, start=request.args.get('start', 1), page_size=request.args.get('page_size', 20)),200
+    else:
+        return jsonify({"Result": str("Members with " + groupID + " name Not Found and with respective mcid")}), 700
+
+
+@members.route('/api/v2/group/<groupID>/member/<mcid>/shap')
+def getMemberDataOfAGroupSHAP(groupID, mcid):
+    result = {}
+    # keys = ['ft_name', 'shap_val']
+    # rawComp = [{key : float(data.get(key)) if key == 'shap_val' else (data.get(key)) for key in keys} for data in msReader if data["groupid"] == groupID and data['mcid'] == mcid]
+    # print(rawComp)
+    # for feature in rawComp:
+    #     if feature['ft_name'] in keyValue.keys():
+    #         feature['ft_name'] = keyValue[feature['ft_name']]
+    # print(rawComp)
+    rawComp = msReader[((msReader['groupid'] == groupID) & (msReader['mcid'] == mcid))]
+    rawComp_members = mReader[((mReader['src_grp_nbr'] == groupID) & (mReader['mcid'] == mcid))]
+    rawComp_leadingFactors = rawComp_members.filter(['Leading Diagnosis code 1', 'Leading Diagnosis code 2'], axis=1)
+    print(rawComp_leadingFactors)
+    # TAKE ABSOLUTE VALUES OF SHAP VALUES
+    rawComp['shap_val_abs'] = rawComp['shap_val'].astype(float).abs()
+    # SORT BASED ON THOSE ABSOLUTE
+    rawComp = rawComp.sort_values(by='shap_val_abs', ascending=False, na_position='first')
+    rawComp = rawComp.reset_index(drop=True)
+    rawComp["magnitude"] = np.where(rawComp["shap_val"].astype(float) >= 0, "postive", "negative")
+    rawComp["Interpretation"] = np.where(rawComp["magnitude"] == "postive", "This feature increased the prediction",
+                                         "This feature decreased the prediction")
+    rawComp["Impact"] = rawComp.apply(lambda row: CommonMethodsobj.impact(row.magnitude, row.name), axis=1)
+    # print(rawComp)
+
+    rawComp = rawComp.to_dict('records')
+    rawComp_leadingFactors = rawComp_leadingFactors.to_dict('records')
+    # print(rawComp)
+    for feature in rawComp:
+        if feature['ft_name'] in keyValue.keys():
+            feature['ft_name'] = keyValue[feature['ft_name']]
+    result["results"] = rawComp
+    result["leading_factor_codes"] = rawComp_leadingFactors
+    if rawComp:
+        return jsonify(results=result, url='/api/v2/groups/' + groupID + '/member/' + mcid + '/shap',
+                       start=request.args.get('start', 1), page_size=request.args.get('page_size', 20)), 200
+    else:
+        return jsonify({"Result": str("SHAP values for respective mcid not found")}), 700
+
 
