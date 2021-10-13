@@ -1,19 +1,14 @@
-FeatureNames,Status,FeatureNames HumanReadable
-abd_dual,Found,abdomen dual
-dcg_mn,Found partially ,diagnostic cost group mn
-dcg_skw,Found partially ,diagnostic cost group skw
-dcg_slp,Found partially ,diagnostic cost group slp
-edctn_9_12_qty,Found partially ,area education 9-12 size
-female_gndr_cd,Found,female gender cd
-hspnc_ppltn_qty,Found,hispanic population quantity
-lab_sparse_val_Aldolase,Found,lab sparse value aldolase
-lab_sparse_val_ApolipoproteinB,Found,lab sparse value apolipo protein b
-lab_sparse_val_BilirubinglucuronidatedBilirubinalbuminbound,Found,lab sparse value bilirubin glucuronidated bilirubin albumin bound
-lab_sparse_val_Coagulationsurfaceinduced,Found,lab sparse value coagulation surface induced
-lab_sparse_val_GlycinemaxAbIgERASTclass,Found,lab sparse value glycine max ab ige rast class
-lab_sparse_val_MilkAbIgERASTclass,Found,lab sparse value milk ab ige rast class
-lab_sparse_val_OleaeuropaeapollenAbIgERASTclass,Found,lab sparse value olea europaea pollen ab ige rast class
-lab_sparse_val_PenicilliumnotatumAbIgERASTclass,Found,lab sparse value penicillium notatum ab ige rast class
-lab_sparse_val_PrunusdulcisAbIgERASTclass,Found,lab sparse value prunus dulcis ab ige rast class
-lab_sparse_val_Sexhormonebindingglobulin,Found,lab sparse value sex hormone binding globulin
-latd_nbr,Found,latitude
+mcid,src_grp_nbr,mbrshp_sor_cd,exp allowed,exp paid (total),exp_mm,tgt mm,tgt eatpp,predicted pooled claims,probability,Leading Diagnosis code 1,Leading Diagnosis code 2
+68072179,00002069,823       ,$ 400,$ 325,12.0,4.0,0.0,0.0,0.00371,I10,J069
+68072176,00002069,823       ,"$ 5,327","$ 4,480",12.0,4.0,0.0,0.0,0.00607,I10,Z0000
+71403010,00002069,823       ,"$ 2,373","$ 1,645",12.0,4.0,0.0,0.0,0.00413,L989,I10
+69059274,00016007,823       ,"$ 4,332","$ 3,982",12.0,6.0,0.0,0.0,0.00398,K580,I10
+69059272,00016007,823       ,"$ 3,263","$ 2,054",12.0,6.0,0.0,13204.055,0.01503,H16223,I10
+220530979,00016007,823       ,$ 784,$ 644,9.0,6.0,0.0,0.0,0.00062,J020,J101
+69104411,00018804,823       ,"$ 2,184","$ 1,841",12.0,2.0,0.0,0.0,0.01727,D582,J329
+69104762,00018836,823       ,"$ 5,796","$ 2,143",12.0,6.0,0.0,0.0,0.01105,Z136,I10
+69164784,00021759,823       ,"$ 1,144",$ 734,12.0,4.0,0.0,0.0,0.00173,J209,I10
+69164785,00021759,823       ,$ 598,$ 358,12.0,4.0,0.0,0.0,0.00033,J209,I10
+69166695,00021803,823       ,"$ 40,279","$ 33,738",12.0,6.0,0.0,0.0,0.0156,I10,C61
+220111237,00021803,823       ,"$ 3,271","$ 1,946",12.0,6.0,0.0,0.0,0.00652,K529,I10
+69063365,00021811,823       ,"$ 9,841","$ 5,622",12.0,6.0,0.0,0.0,0.03394,R0602,E7800
