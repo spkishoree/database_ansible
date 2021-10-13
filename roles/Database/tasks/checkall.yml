@@ -1,19 +1,19 @@
-shap_values,groupid,feature_values,Feature name
--9.87696,00C066,0.80184,prsrsk skw
--9.75164,00C066,5.83649,OP - ER WITH SURGERY - UNKNOWN E&M
--8.64913,00C066,0.96241,prsrsk cnt
-8.38289,00C066,0.90001,PR - LAB & PATHOLOGY - OP
-7.83807,00C066,1.39288,OP - RADIOLOGY - PET
--7.1822,00C066,-0.00024,IP - SURGICAL - DIGESTIVE SYSTEM
--6.27497,00C066,5.78864,PR - NON-DELIVERIES
--5.46212,00C066,0.11412,IP - PSYCHIATRIC
--0.0163,00C070,7.92466,IP - PSYCHIATRIC
-28.89256,00C070,0.11234,PR - MEDICAL - CARDIOVASCULAR
-14.93337,00C070,11.80675,PR - UNKNOWN
-14.84134,00C070,1.58712,prsrsk krt
-13.1255,00C070,0.01153,IP - SURGICAL - DIGESTIVE SYSTEM
--11.59146,00C070,29.0,below 30
-10.0499,00C070,19.83103,PR - OP PSYCHIATRIC
-9.11982,00C070,0.4795,PR - PREVENTIVE - PHYSICAL EXAMS - PROFESSIONAL
--8.58961,00C070,0.1429,PR - RADIOLOGY - OFFICE (COMBINED) - CT
-8.16529,00C070,0.20419,prsrsk mx
+FeatureNames,Status,FeatureNames HumanReadable
+abd_dual,Found,abdomen dual
+dcg_mn,Found partially ,diagnostic cost group mn
+dcg_skw,Found partially ,diagnostic cost group skw
+dcg_slp,Found partially ,diagnostic cost group slp
+edctn_9_12_qty,Found partially ,area education 9-12 size
+female_gndr_cd,Found,female gender cd
+hspnc_ppltn_qty,Found,hispanic population quantity
+lab_sparse_val_Aldolase,Found,lab sparse value aldolase
+lab_sparse_val_ApolipoproteinB,Found,lab sparse value apolipo protein b
+lab_sparse_val_BilirubinglucuronidatedBilirubinalbuminbound,Found,lab sparse value bilirubin glucuronidated bilirubin albumin bound
+lab_sparse_val_Coagulationsurfaceinduced,Found,lab sparse value coagulation surface induced
+lab_sparse_val_GlycinemaxAbIgERASTclass,Found,lab sparse value glycine max ab ige rast class
+lab_sparse_val_MilkAbIgERASTclass,Found,lab sparse value milk ab ige rast class
+lab_sparse_val_OleaeuropaeapollenAbIgERASTclass,Found,lab sparse value olea europaea pollen ab ige rast class
+lab_sparse_val_PenicilliumnotatumAbIgERASTclass,Found,lab sparse value penicillium notatum ab ige rast class
+lab_sparse_val_PrunusdulcisAbIgERASTclass,Found,lab sparse value prunus dulcis ab ige rast class
+lab_sparse_val_Sexhormonebindingglobulin,Found,lab sparse value sex hormone binding globulin
+latd_nbr,Found,latitude
